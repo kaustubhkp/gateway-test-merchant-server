@@ -167,20 +167,37 @@ function outputJsonResponse($response) {
     exit;
 }
 
-function proxyCall($path, $data = null, $method = null) {
-    global $headers, $gatewayUrl;
+function proxyCall($path, $payload = null, $method = 'POST') {
+    $url = getenv('GATEWAY_BASE_URL') . $path;
 
-    $httpMethod = $method ?: $_SERVER['REQUEST_METHOD'];
-    $jsonBody = is_array($data) ? json_encode($data) : ($data ?? getJsonPayload());
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Basic ' . base64_encode(getenv('GATEWAY_AUTH'))
+    ]);
+    if ($payload !== null) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        error_log("Payload: " . json_encode($payload));
+    }
 
-    $fullUrl = $gatewayUrl . $path;
-    error_log("Calling $httpMethod $fullUrl");
-    error_log("Payload: $jsonBody");
+    $responseBody = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-    $rawResponse = doRequest($fullUrl, $httpMethod, $jsonBody, $headers);
+    error_log("Raw Gateway Response: $responseBody");
 
-    error_log("Raw Gateway Response: $rawResponse");
+    curl_close($ch);
 
-    return decodeResponse($rawResponse); // This might be failing
+    $decoded = json_decode($responseBody, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log("JSON decode error: " . json_last_error_msg());
+        throw new Exception('Invalid JSON response from gateway');
+    }
+
+    // Return both decoded and raw response with status code
+    return $decoded;
 }
+
 
