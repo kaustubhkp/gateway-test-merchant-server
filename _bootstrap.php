@@ -143,11 +143,13 @@ function getJsonPayload() {
 function decodeResponse($response) {
     $decoded = json_decode($response, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        error(400, 'Could not decode json response from gateway');
+        error_log("JSON decode error: " . json_last_error_msg());
+        error_log("Original response: " . $response);
+        error(400, 'Failed to decode JSON response from gateway');
     }
-
     return $decoded;
 }
+
 
 function outputJsonResponse($response) {
     global $apiVersion;
@@ -165,15 +167,20 @@ function outputJsonResponse($response) {
     exit;
 }
 
-function proxyCall($path) {
+function proxyCall($path, $data = null, $method = null) {
     global $headers, $gatewayUrl;
 
-    // get json payload from request
-    $payload = getJsonPayload();
+    $httpMethod = $method ?: $_SERVER['REQUEST_METHOD'];
+    $jsonBody = is_array($data) ? json_encode($data) : ($data ?? getJsonPayload());
 
-    // proxy authenticated request
-    $response = doRequest($gatewayUrl . $path, $_SERVER['REQUEST_METHOD'], $payload, $headers);
+    $fullUrl = $gatewayUrl . $path;
+    error_log("Calling $httpMethod $fullUrl");
+    error_log("Payload: $jsonBody");
 
-    // output response
-    outputJsonResponse($response);
+    $rawResponse = doRequest($fullUrl, $httpMethod, $jsonBody, $headers);
+
+    error_log("Raw Gateway Response: $rawResponse");
+
+    return decodeResponse($rawResponse); // This might be failing
 }
+
