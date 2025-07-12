@@ -57,13 +57,57 @@ try {
         exit;
     }
 
+    // Extract session ID from response (fallback to request)
+    $sessionId = $iaData['session']['id'] ?? ($initPayload['session']['id'] ?? null);
+    if (!$sessionId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Missing session ID']);
+        exit;
+    }
+
+    // Extract 3DSecureId from query param or request body
+    $threeDSecureId = $_GET['3DSecureId'] ?? ($initPayload['3DSecureId'] ?? null);
+    if (!$threeDSecureId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Missing 3DSecureId']);
+        exit;
+    }
+
     // === 2. Build 3DS Transaction ===
     error_log("Step 2: Build 3DS2 Transaction (noop)");
 
     // === 3. Authenticate Payer ===
     error_log("Step 3: Authenticate Payer");
 
-    $authPayload = ['apiOperation' => 'AUTHENTICATE_PAYER'];
+    $authPayload = [
+        "apiOperation" => "AUTHENTICATE_PAYER",
+        'authentication' => [
+            'redirectResponseUrl' => 'https://francophone-leaf-52430-c8565a556f27.herokuapp.com/?orderId='
+                . $orderId . '&transactionId=' . $transactionId . '&3DSecureId=' . $threeDSecureId
+        ],
+        "device" => [
+            "browser" => "MOZILLA",
+            "ipAddress" => "127.0.0.1",
+            "browserDetails" => [
+                "3DSecureChallengeWindowSize" => "FULL_SCREEN",
+                "acceptHeaders" => "application/json",
+                "colorDepth" => 24,
+                "javaEnabled" => true,
+                "language" => "en-US",
+                "screenHeight" => 640,
+                "screenWidth" => 480,
+                "timeZone" => 273
+            ]
+        ],
+        "session" => [
+            "id" => $sessionId
+        ],
+        "order" => [
+            "amount" => 1.0,
+            "currency" => "SAR"
+        ]
+    ];
+
     $authenticateResponse = proxyCall($apiBasePath, $authPayload, 'POST');
     $apData = $authenticateResponse['gatewayResponse'] ?? null;
 
