@@ -11,19 +11,24 @@ if (intercept('POST')) {
         $transactionUrl = $gatewayUrl . "/order/{$orderId}/transaction/{$transactionId}";
         $transactionResponse = doRequest($transactionUrl, 'GET', null, $headers);
 
-        // Step 2: Parse NVP transaction data
+        // Step 2: Decode the JSON string (response is a JSON string)
         $transactionData = [];
-        if (!empty($transactionResponse) && strpos($transactionResponse, '=') !== false) {
-            parse_str(str_replace("\n", "&", trim($transactionResponse)), $transactionData);
+        $transactionData = json_decode($transactionResponse, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Invalid JSON response from gateway");
         }
 
-        $transactionStatus = $transactionData['transaction.status'] ?? 'UNKNOWN';
-        $amount = $transactionData['transaction.amount'] ?? '';
-        $currency = $transactionData['transaction.currency'] ?? '';
-        $authCode = $transactionData['transaction.authorizationCode'] ?? '';
+        // Step 3: Extract necessary fields
+        $result = $transactionData['result'];
+        $transactionStatus = $transactionData['transaction']['authenticationStatus'] ?? 'UNKNOWN';
+        $amount = $transactionData['transaction']['amount'] ?? '';
+        $currency = $transactionData['transaction']['currency'] ?? '';
+        $authCode = $transactionData['transaction']['id'] ?? '';
 
-        // Step 3: Redirect to mobile app
+        // Step 4: Build param list
         $params = [
+            'result' => $result,
             'txnStatus' => $transactionStatus,
             'amount' => $amount,
             'currency' => $currency,
@@ -32,7 +37,12 @@ if (intercept('POST')) {
             'transactionId' => $transactionId
         ];
 
-        $redirectUrl = "gatewaysdk://3dsecure?" . http_build_query($params);
+        // $encodedParams = urlencode(http_build_query($params));
+        $encodedParams = urlencode($transactionResponse);
+
+    // Step 6: Redirect
+        $redirectUrl = "gatewaysdk://3dsecure?acsResult=" . $encodedParams;
+        // $redirectUrl = "gatewaysdk://3dsecure?" . http_build_query($params);
         doRedirect($redirectUrl);
 
     } catch (Exception $e) {
