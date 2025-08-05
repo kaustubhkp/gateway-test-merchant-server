@@ -3,31 +3,15 @@
 include '_bootstrap.php';
 
 if (intercept('POST')) {
-    $threeDSecureId = requiredQueryParam('3DSecureId');
-    $orderId = requiredQueryParam('orderId');
-    $transactionId = requiredQueryParam('transactionId');
+    $orderId = $_GET['order'] ?? null;
+    $transactionId = $_GET['transaction'] ?? null;
 
     try {
-        // Step 1: AUTHENTICATE_PAYER
-        $payload = [ 'apiOperation' => 'AUTHENTICATE_PAYER' ];
-
-        $authResponse = doRequest(
-            $gatewayUrl . '/3DSecureId/' . $threeDSecureId,
-            'POST', // ✅ Use POST
-            json_encode($payload),
-            $headers
-        );
-
-        $parsed = json_decode($authResponse, true);
-        $summaryStatus = $parsed['3DSecure']['summaryStatus']
-            ?? $parsed['gatewayResponse']['authentication']['summaryStatus']
-            ?? 'UNKNOWN';
-
-        // Step 2: Retrieve transaction
+        // Step 1: Retrieve transaction
         $transactionUrl = $gatewayUrl . "/merchant/{$merchantId}/order/{$orderId}/transaction/{$transactionId}";
         $transactionResponse = doRequest($transactionUrl, 'GET', null, $headers);
 
-        // Step 3: Parse NVP transaction data
+        // Step 2: Parse NVP transaction data
         $transactionData = [];
         if (!empty($transactionResponse) && strpos($transactionResponse, '=') !== false) {
             parse_str(str_replace("\n", "&", trim($transactionResponse)), $transactionData);
@@ -38,9 +22,9 @@ if (intercept('POST')) {
         $currency = $transactionData['transaction.currency'] ?? '';
         $authCode = $transactionData['transaction.authorizationCode'] ?? '';
 
-        // Step 4: Redirect to mobile app
+        // Step 3: Redirect to mobile app
         $params = [
-            'status' => $summaryStatus,
+            'status' => $transactionStatus, // Using transactionStatus instead of summaryStatus
             'txnStatus' => $transactionStatus,
             'amount' => $amount,
             'currency' => $currency,

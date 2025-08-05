@@ -91,7 +91,7 @@ if (intercept('POST') || intercept('PUT')) {
           ],
           'apiOperation' => 'AUTHENTICATE_PAYER',
           'authentication' => [
-                    'redirectResponseUrl' => "https://francophone-leaf-52430-c8565a556f27.herokuapp.com/3DSecureResult.php?order={$orderId}&transaction={$transactionId}"
+                    'redirectResponseUrl' => "https://francophone-leaf-52430-c8565a556f27.herokuapp.com/authenticate-payer-callback.php?order={$orderId}&transaction={$transactionId}"
           ]
       ];
 
