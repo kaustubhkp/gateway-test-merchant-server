@@ -28,6 +28,6 @@ if (intercept('GET')) {
     error_log($response);
 
     // build mobile redirect with full response payload as acsResult
-    doRedirect("gatewaysdk://3dsecure?acsResult=" . urlencode($response));
+    doRedirect("gatewaysdk://3dsecure?paymentResult=" . urlencode($response));
 }
 

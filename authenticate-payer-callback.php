@@ -41,7 +41,7 @@ if (intercept('POST')) {
         $encodedParams = urlencode($transactionResponse);
 
     // Step 6: Redirect
-        $redirectUrl = "gatewaysdk://3dsecure?acsResult=" . $encodedParams;
+        $redirectUrl = "gatewaysdk://3dsecure?paymentResult=" . $encodedParams;
         // $redirectUrl = "gatewaysdk://3dsecure?" . http_build_query($params);
         doRedirect($redirectUrl);
 
