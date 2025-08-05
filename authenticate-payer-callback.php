@@ -8,7 +8,7 @@ if (intercept('POST')) {
 
     try {
         // Step 1: Retrieve transaction
-        $transactionUrl = $gatewayUrl . "/merchant/{$merchantId}/order/{$orderId}/transaction/{$transactionId}";
+        $transactionUrl = $gatewayUrl . "/order/{$orderId}/transaction/{$transactionId}";
         $transactionResponse = doRequest($transactionUrl, 'GET', null, $headers);
 
         // Step 2: Parse NVP transaction data
@@ -24,7 +24,6 @@ if (intercept('POST')) {
 
         // Step 3: Redirect to mobile app
         $params = [
-            'status' => $transactionStatus, // Using transactionStatus instead of summaryStatus
             'txnStatus' => $transactionStatus,
             'amount' => $amount,
             'currency' => $currency,
