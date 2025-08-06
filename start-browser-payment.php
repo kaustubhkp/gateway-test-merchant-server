@@ -12,7 +12,7 @@
 include '_bootstrap.php';
 
 // proxy POST and PUT requests
-if (intercept('POST') || intercept('PUT')) {
+if (intercept('PUT')) {
     header('Content-Type: application/json');
 
     try {
