@@ -12,7 +12,7 @@ if (intercept('POST')) {
         $transactionResponse = doRequest($transactionUrl, 'GET', null, $headers);
 
         // Step 2: Redirect
-        $redirectUrl = "gatewaysdk://3dsecure?paymentResult=" . $urlencode($transactionResponse);
+        $redirectUrl = "gatewaysdk://3dsecure?paymentResult=" . urlencode($transactionResponse);
         doRedirect($redirectUrl);
 
     } catch (Exception $e) {
