@@ -83,18 +83,10 @@ if (intercept('PUT')) {
       // === Step 3: AUTHENTICATE_PAYER ===
       error_log("Step 3: Authenticate Payer");
 
-      $devicePayload['ipAddress'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-
-      $authPayload = [
-          'session' => [
-              'id' => $initPayload['session']['id']
-          ],
-          'order' => [
-            'currency' => $initPayload['order']['currency'],
-            'amount' => $amount
-          ],
-          'apiOperation' => 'AUTHENTICATE_PAYER',
-          'device' => $devicePayload ?? [
+      if (isset($devicePayload)) {
+        $devicePayload['ipAddress'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+      } else {
+        $devicePayload = [
               'browser' => 'MOZILLA',
               'browserDetails' => [
                   '3DSecureChallengeWindowSize' => 'FULL_SCREEN',
@@ -107,7 +99,19 @@ if (intercept('PUT')) {
                   'timeZone' => 273
               ],
               'ipAddress' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+            ];
+      }
+
+      $authPayload = [
+          'session' => [
+              'id' => $initPayload['session']['id']
           ],
+          'order' => [
+            'currency' => $initPayload['order']['currency'],
+            'amount' => $amount
+          ],
+          'apiOperation' => 'AUTHENTICATE_PAYER',
+          'device' => $devicePayload,
           'authentication' => [
                     'redirectResponseUrl' => "https://francophone-leaf-52430-c8565a556f27.herokuapp.com/authenticate-payer-callback.php?order={$orderId}&transaction={$transactionId}"
           ]
