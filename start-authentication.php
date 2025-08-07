@@ -50,13 +50,19 @@ if (intercept('PUT')) {
       error_log("Step 1: Initiate Authentication");
       error_log("Payload: " . json_encode($initPayload));
 
+      $amount = null;
+      if (isset($initPayload['order']['amount'])) {
+          $amount = $initPayload['order']['amount'];
+          unset($initPayload['order']['amount']);
+      }
+
       $initiateResponse = proxyCall($apiBasePath, $initPayload, 'PUT');
       error_log("DEBUG: initiateResponse: " . json_encode($initiateResponse));
 
-      $iaData = $initiateResponse['gatewayResponse'] ?? $initiateResponse;
+      $isData = $initiateResponse['gatewayResponse'] ?? $initiateResponse;
       error_log("DEBUG: gatewayResponse used as iaData: " . json_encode($iaData));
 
-      if (!$iaData || empty($initPayload['session']['id'])) {
+      if (!$isData || empty($initPayload['session']['id'])) {
           echo json_encode([
               'step' => 'INITIATE_AUTHENTICATION',
               'message' => 'No auth data returned or missing session ID',
@@ -77,7 +83,7 @@ if (intercept('PUT')) {
           ],
           'order' => [
             'currency' => $initPayload['order']['currency'],
-            'amount' => $initPayload['order']['amount'] ?? '1.0'
+            'amount' => $amount
           ],
           'apiOperation' => 'AUTHENTICATE_PAYER',
           'device' => [
