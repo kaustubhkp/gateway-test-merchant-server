@@ -46,15 +46,21 @@ if (intercept('PUT')) {
           ];
       }
 
-      // === Step 1: INITIATE_AUTHENTICATION ===
-      error_log("Step 1: Initiate Authentication");
-      error_log("Payload: " . json_encode($initPayload));
-
       $amount = null;
       if (isset($initPayload['order']['amount'])) {
           $amount = $initPayload['order']['amount'];
           unset($initPayload['order']['amount']);
       }
+
+      $devicePayload = null;
+      if (isset($initPayload['device'])) {
+          $devicePayload = $initPayload['device'];
+          unset($initPayload['device']);
+      }
+
+      // === Step 1: INITIATE_AUTHENTICATION ===
+      error_log("Step 1: Initiate Authentication");
+      error_log("Payload: " . json_encode($initPayload));
 
       $initiateResponse = proxyCall($apiBasePath, $initPayload, 'PUT');
       error_log("DEBUG: initiateResponse: " . json_encode($initiateResponse));
@@ -77,6 +83,8 @@ if (intercept('PUT')) {
       // === Step 3: AUTHENTICATE_PAYER ===
       error_log("Step 3: Authenticate Payer");
 
+      $devicePayload['ipAddress'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+
       $authPayload = [
           'session' => [
               'id' => $initPayload['session']['id']
@@ -86,7 +94,7 @@ if (intercept('PUT')) {
             'amount' => $amount
           ],
           'apiOperation' => 'AUTHENTICATE_PAYER',
-          'device' => [
+          'device' => $devicePayload ?? [
               'browser' => 'MOZILLA',
               'browserDetails' => [
                   '3DSecureChallengeWindowSize' => 'FULL_SCREEN',
