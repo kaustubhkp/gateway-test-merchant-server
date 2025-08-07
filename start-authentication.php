@@ -65,10 +65,10 @@ if (intercept('PUT')) {
       $initiateResponse = proxyCall($apiBasePath, $initPayload, 'PUT');
       error_log("DEBUG: initiateResponse: " . json_encode($initiateResponse));
 
-      $isData = $initiateResponse['gatewayResponse'] ?? $initiateResponse;
+      $iaData = $initiateResponse['gatewayResponse'] ?? $initiateResponse;
       error_log("DEBUG: gatewayResponse used as iaData: " . json_encode($iaData));
 
-      if (!$isData || empty($initPayload['session']['id'])) {
+      if (!$iaData || empty($initPayload['session']['id'])) {
           echo json_encode([
               'step' => 'INITIATE_AUTHENTICATION',
               'message' => 'No auth data returned or missing session ID',
