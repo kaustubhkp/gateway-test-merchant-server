@@ -75,6 +75,11 @@ if (intercept('PUT')) {
           'session' => [
               'id' => $initPayload['session']['id']
           ],
+          'order' => [
+            'currency' => $initPayload['order']['currency'],
+            'amount' => $initPayload['order']['amount'] ?? '1.0'
+          ],
+          'apiOperation' => 'AUTHENTICATE_PAYER',
           'device' => [
               'browser' => 'MOZILLA',
               'browserDetails' => [
@@ -89,7 +94,6 @@ if (intercept('PUT')) {
               ],
               'ipAddress' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
           ],
-          'apiOperation' => 'AUTHENTICATE_PAYER',
           'authentication' => [
                     'redirectResponseUrl' => "https://francophone-leaf-52430-c8565a556f27.herokuapp.com/authenticate-payer-callback.php?order={$orderId}&transaction={$transactionId}"
           ]
