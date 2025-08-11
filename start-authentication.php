@@ -1,11 +1,19 @@
 <?php
+
 /*
- * Unified 3DS 2.x Authentication Flow
- * Steps:
- * 1. Initiate Authentication
- * 2. Build 3DS2 Transaction (noop in PHP)
- * 3. Authenticate Payer (with full device/browser payload)
- * 4. Return result
+ * Copyright (c) 2025 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 include '_bootstrap.php';
@@ -86,7 +94,7 @@ if (intercept('PUT')) {
       if (isset($devicePayload)) {
         $devicePayload['ipAddress'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
       } else {
-        $devicePayload = [
+        $devicePayload = [ // Fallback if $devicePayload not available
               'browser' => 'MOZILLA',
               'browserDetails' => [
                   '3DSecureChallengeWindowSize' => 'FULL_SCREEN',
@@ -161,67 +169,62 @@ if (intercept('PUT')) {
   <h3>Start Authentication (INITIATE + AUTHENTICATE)</h3>
 
   <h5>Sample Request</h5>
-  <pre><code>POST <?php echo htmlentities('https://francophone-leaf-52430-c8565a556f27.herokuapp.com/start-authentication?orderId={order-id}&transactionId={transaction-id}'); ?>
-
-  Content-Type: application/json
-  Payload:
-  {
-    "apiOperation": "INITIATE_AUTHENTICATION",
-    "session": {
-      "id": "SESSION0002677199564H1362874H71"
-    },
-    "authentication": {
-      "purpose": "PAYMENT_TRANSACTION",
-      "channel": "PAYER_BROWSER"
-    }
+  <pre><code>PUT <?php echo htmlentities('https://francophone-leaf-52430-c8565a556f27.herokuapp.com/start-authentication?orderId={order-id}&transactionId={transaction-id}'); ?>
+Content-Type: application/json
+Payload:
+{
+  "apiOperation": "INITIATE_AUTHENTICATION",
+  "session": {
+    "id": "SESSION0002677199564H1362874H71"
+  },
+  "authentication": {
+    "purpose": "PAYMENT_TRANSACTION",
+    "channel": "PAYER_BROWSER"
   }
-  </code></pre>
+}</code></pre>
 
   <h5>Sample Response</h5>
   <pre><code>Content-Type: application/json
-  Payload:
-  {
-    "step": "CHALLENGE_OR_COMPLETION",
-    "initiateResult": {
-      "apiVersion": "<?php echo $apiVersion; ?>",
-      "gatewayResponse": {
-        "authentication": {
-          "version": "2.1.0",
-          "summaryStatus": "CARD_ENROLLED",
-          "redirectHtml": "&lt;script&gt;...&lt;/script&gt;"
-        },
-        "order": {
-          "id": "{order-id}",
-          "status": "PENDING"
-        },
-        "transaction": {
-          "id": "{transaction-id}",
-          "type": "AUTHENTICATION"
-        },
-        "result": "SUCCESS"
-      }
-    },
-    "authenticateResult": {
-      "apiVersion": "<?php echo $apiVersion; ?>",
-      "gatewayResponse": {
-        "authentication": {
-          "summaryStatus": "AUTHENTICATION_SUCCESSFUL
-          ",
-          "redirectHtml": "&lt;html&gt;...&lt;/html&gt;"
-        },
-        "order": {
-          "id": "{order-id}",
-          "status": "AUTHENTICATED"
-        },
-        "transaction": {
-          "id": "{transaction-id}",
-          "type": "AUTHENTICATION"
-        },
-        "result": "SUCCESS"
-      }
+Payload:
+{
+  "step": "CHALLENGE_OR_COMPLETION",
+  "initiateResult": {
+    "apiVersion": "<?php echo $apiVersion; ?>",
+    "gatewayResponse": {
+      "authentication": {
+        "version": "2.1.0",
+        "summaryStatus": "CARD_ENROLLED",
+        "redirectHtml": "&lt;script&gt;...&lt;/script&gt;"
+      },
+      "order": {
+        "id": "{order-id}",
+        "status": "PENDING"
+      },
+      "transaction": {
+        "id": "{transaction-id}",
+        "type": "AUTHENTICATION"
+      },
+      "result": "SUCCESS"
+    }
+  },
+  "authenticateResult": {
+    "apiVersion": "<?php echo $apiVersion; ?>",
+    "gatewayResponse": {
+      "authentication": {
+        "summaryStatus": "AUTHENTICATION_SUCCESSFUL",
+        "redirectHtml": "&lt;html&gt;...&lt;/html&gt;"
+      },
+      "order": {
+        "id": "{order-id}",
+        "status": "AUTHENTICATED"
+      },
+      "transaction": {
+        "id": "{transaction-id}",
+        "type": "AUTHENTICATION"
+      },
+      "result": "SUCCESS"
     }
   }
-  </code></pre>
-
+}</code></pre>
   </body>
 </html>
