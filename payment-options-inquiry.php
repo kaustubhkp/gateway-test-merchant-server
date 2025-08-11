@@ -36,10 +36,9 @@ if (intercept('POST')) {
     </head>
     <body>
         <h1>Payment Options Inquiry API</h1>
-        <h3>Create Session Operation</h3>
         <h5>Sample Request</h5>
-        <pre><code>POST <?php echo $pageUrl; ?></code></pre>
-        <pre><code>Content-Type: application/json
+        <pre><code>POST <?php echo $pageUrl; ?>
+Content-Type: application/json</code></pre>
         <h5>Sample Response</h5>
         <pre><code>Content-Type: application/json
 Payload:
