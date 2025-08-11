@@ -80,7 +80,7 @@ Payload:
         "channel": "PAYER_CHANNEL",
         "acceptVersions": "Accepted Versions",
         "purpose": "PAYMENT_TRANSACTION",
-        "redirectResponseUrl": <?php echo $pageUrl; ?>
+        "redirectResponseUrl": "Redirect URL To be Passed"
     },
     "sourceOfFunds": {
         "type": "CARD",
@@ -104,7 +104,7 @@ Payload:
         "acceptVersions": "Accepted Versions",
         "channel": "PAYER_CHANNEL",
         "purpose": "PAYMENT_TRANSACTION",
-        "redirectResponseUrl": <?php echo $pageUrl; ?>
+        "redirectResponseUrl": "Redirect URL Passed"
     },
     "merchant": "OTTU_MER2",
     "session": {
