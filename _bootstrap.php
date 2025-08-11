@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2016 Mastercard
+ * Copyright (c) 2025 Mastercard
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
@@ -168,8 +167,6 @@ function outputJsonResponse($response) {
 function proxyCall($path, $payload = null, $method = null) {
     global $headers, $gatewayUrl;
 
-    error_log("=== proxyCall invoked ===");
-
     // Determine HTTP method
     $httpMethod = $method ?? $_SERVER['REQUEST_METHOD'];
 
@@ -177,13 +174,6 @@ function proxyCall($path, $payload = null, $method = null) {
     if ($payload === null) {
         $payload = getJsonPayload();
     }
-
-    // Log the request safely
-    error_log("URL Path: " . $path);
-    error_log("Gateway URL: " . $gatewayUrl);
-    error_log("Method: " . $httpMethod);
-    error_log("Payload: " . (is_string($payload) ? $payload : json_encode($payload)));
-    error_log("Headers: " . json_encode($headers));
 
     // Decode payload (if string), or use directly if already array
     $decodedPayload = is_array($payload) ? $payload : json_decode($payload, true);
@@ -196,7 +186,6 @@ function proxyCall($path, $payload = null, $method = null) {
 
     // Perform gateway request
     $response = doRequest($gatewayUrl . $path, $httpMethod, $jsonPayload, $headers);
-    error_log("Response: " . $response);
 
     if ($isInitiateAuth) {
         // do NOT exit, return response for further steps
@@ -206,5 +195,3 @@ function proxyCall($path, $payload = null, $method = null) {
     // default: output and exit
     outputJsonResponse($response);
 }
-
-
