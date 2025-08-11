@@ -1,10 +1,24 @@
 <?php
 
+/*
+ * Copyright (c) 2025 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 include '_bootstrap.php';
 
 if (intercept('GET')) {
-    error_log("=== proxyCall invoked ===");
-
     $orderId = $_GET['order'] ?? null;
     $transactionId = $_GET['transaction'] ?? null;
 
@@ -23,11 +37,6 @@ if (intercept('GET')) {
 
     header('Content-Type: application/json');
 
-    // log the response
-    error_log("=== proxyCall response 1 ===");
-    error_log($response);
-
     // build mobile redirect with full response payload as acsResult
     doRedirect("gatewaysdk://3dsecure?paymentResult=" . urlencode($response));
 }
-
