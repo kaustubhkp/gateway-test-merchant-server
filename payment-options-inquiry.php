@@ -37,7 +37,7 @@ if (intercept('POST')) {
     <body>
         <h1>Payment Options Inquiry API</h1>
         <h5>Sample Request</h5>
-        <pre><code>POST <?php echo $pageUrl; ?>
+        <pre><code>POST <?php echo $pageUrl . "\n"; ?>
 Content-Type: application/json</code></pre>
         <h5>Sample Response</h5>
         <pre><code>Content-Type: application/json
