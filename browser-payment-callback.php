@@ -37,6 +37,6 @@ if (intercept('GET')) {
 
     header('Content-Type: application/json');
 
-    // build mobile redirect with full response payload as acsResult
-    doRedirect("gatewaysdk://3dsecure?orderResult=" . urlencode($response));
+    // build mobile redirect with full response payload as orderResult
+    doRedirect("gatewaysdk://browserpayment?orderResult=" . urlencode($response));
 }
