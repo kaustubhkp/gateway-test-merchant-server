@@ -89,7 +89,7 @@ if (intercept('PUT')) {
       error_log("Recommendation: " . json_encode($recommendation));
 
       $status = $$iaData['transaction']['authenticationStatus'] ?? null;
-      error_log("Status: " . json_encode($recommendation));
+      error_log("Status: " . json_encode($status));
 
       if (isset($recommendation)) {
         switch($recommendation) {
@@ -166,7 +166,7 @@ if (intercept('PUT')) {
 
       // === Step 4: Return Result ===
       echo json_encode($authenticateResponse);
-      
+
   } catch (Exception $e) {
       http_response_code(500);
       error_log("EXCEPTION: " . $e->getMessage());
