@@ -85,6 +85,38 @@ if (intercept('PUT')) {
           exit;
       }
 
+      $recommendation = $iaData['response']['gatewayRecommendation'] ?? null;
+      error_log("Recommendation: " . json_encode($recommendation));
+
+      $status = $$iaData['transaction']['authenticationStatus'] ?? null;
+      error_log("Status: " . json_encode($recommendation));
+
+      if (isset($recommendation)) {
+        switch($recommendation) {
+          case 'PROCEED':
+            $strippedStatus = preg_replace('/^AUTHENTICATION_/', '', $status);
+            error_log("Stripped Status: " . json_encode($strippedStatus));
+
+            switch ($strippedStatus) {
+              case 'EXEMPT':
+              case 'SUCCESSFUL':
+              case 'ATTEMPTED':
+              case 'NOT_SUPPORTED':
+                echo json_encode($$iaData);
+                exit;
+              default:
+                break;
+            }
+
+          default:
+          echo json_encode($$iaData);
+          exit;
+        }
+      } else {
+        echo json_encode($$iaData);
+        exit;
+      }
+
       // === Step 2: Build 3DS2 Transaction (noop) ===
       error_log("Step 2: Build 3DS2 Transaction (noop)");
 
@@ -134,7 +166,7 @@ if (intercept('PUT')) {
 
       // === Step 4: Return Result ===
       echo json_encode($authenticateResponse);
-
+      
   } catch (Exception $e) {
       http_response_code(500);
       error_log("EXCEPTION: " . $e->getMessage());
