@@ -57,7 +57,7 @@ if (intercept('PUT')) {
       $amount = null;
       if (isset($initPayload['order']['amount'])) {
           $amount = $initPayload['order']['amount'];
-          unset($initPayload['order']['amount']);
+          // unset($initPayload['order']['amount']);
       }
 
       $devicePayload = null;
@@ -166,7 +166,7 @@ if (intercept('PUT')) {
       // === Step 4: Return Result ===
       error_log("Step 4: Return Result");
       echo json_encode($authenticateResponse);
-
+      exit;
   } catch (Exception $e) {
       http_response_code(500);
       error_log("EXCEPTION: " . $e->getMessage());
