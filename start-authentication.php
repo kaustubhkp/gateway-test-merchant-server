@@ -57,7 +57,7 @@ if (intercept('PUT')) {
       $amount = null;
       if (isset($initPayload['order']['amount'])) {
           $amount = $initPayload['order']['amount'];
-          // unset($initPayload['order']['amount']);
+          unset($initPayload['order']['amount']);
       }
 
       $devicePayload = null;
