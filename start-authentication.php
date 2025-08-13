@@ -88,7 +88,7 @@ if (intercept('PUT')) {
       $recommendation = $iaData['response']['gatewayRecommendation'] ?? null;
       error_log("Recommendation: " . json_encode($recommendation));
 
-      $status = $$iaData['transaction']['authenticationStatus'] ?? null;
+      $status = $iaData['transaction']['authenticationStatus'] ?? null;
       error_log("Status: " . json_encode($status));
 
       if (isset($recommendation)) {
