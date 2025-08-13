@@ -107,6 +107,7 @@ if (intercept('PUT')) {
               default:
                 break;
             }
+            break;
 
           default:
           echo json_encode($iaData);
