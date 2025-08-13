@@ -102,18 +102,18 @@ if (intercept('PUT')) {
               case 'SUCCESSFUL':
               case 'ATTEMPTED':
               case 'NOT_SUPPORTED':
-                echo json_encode($$iaData);
+                echo json_encode($iaData);
                 exit;
               default:
                 break;
             }
 
           default:
-          echo json_encode($$iaData);
+          echo json_encode($iaData);
           exit;
         }
       } else {
-        echo json_encode($$iaData);
+        echo json_encode($iaData);
         exit;
       }
 
