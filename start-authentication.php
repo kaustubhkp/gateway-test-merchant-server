@@ -71,7 +71,7 @@ if (intercept('PUT')) {
       error_log("Payload: " . json_encode($initPayload));
 
       $initiateResponse = proxyCall($apiBasePath, $initPayload, 'PUT');
-      error_log("DEBUG: initiateResponse: " . json_encode($initiateResponse));
+      error_log("PHONIES: initiateResponse: " . json_encode($initiateResponse));
 
       $iaData = $initiateResponse['gatewayResponse'] ?? $initiateResponse;
       error_log("DEBUG: gatewayResponse used as iaData: " . json_encode($iaData));
@@ -89,7 +89,7 @@ if (intercept('PUT')) {
       error_log("Recommendation: " . json_encode($recommendation));
 
       $status = $iaData['transaction']['authenticationStatus'] ?? null;
-      error_log("Status: " . json_encode($status));
+      error_log("Authentication Status: " . json_encode($status));
 
       if (isset($recommendation)) {
         switch($recommendation) {
@@ -163,9 +163,8 @@ if (intercept('PUT')) {
       $authenticateResponse = proxyCall($apiBasePath, $authPayload, 'PUT');
       error_log("DEBUG: authenticateResponse: " . json_encode($authenticateResponse));
 
-      $apData = $authenticateResponse['gatewayResponse'] ?? null;
-
       // === Step 4: Return Result ===
+      error_log("Step 4: Return Result");
       echo json_encode($authenticateResponse);
 
   } catch (Exception $e) {
