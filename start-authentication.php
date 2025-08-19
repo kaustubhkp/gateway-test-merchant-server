@@ -98,14 +98,11 @@ if (intercept('PUT')) {
             error_log("Stripped Status: " . json_encode($strippedStatus));
 
             switch ($strippedStatus) {
-              case 'EXEMPT':
-              case 'SUCCESSFUL':
-              case 'ATTEMPTED':
-              case 'NOT_SUPPORTED':
+              case 'AVAILABLE':
+                break;
+              default:
                 echo json_encode($iaData);
                 exit;
-              default:
-                break;
             }
             break;
 
