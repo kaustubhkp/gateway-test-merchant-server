@@ -164,34 +164,34 @@ function outputJsonResponse($response) {
     exit;
 }
 
-function proxyCall($path, $payload = null, $method = null) {
+function proxyCall($path, $payload = null, $method = null, $returnOnly = false) {
     global $headers, $gatewayUrl;
 
     // Determine HTTP method
     $httpMethod = $method ?? $_SERVER['REQUEST_METHOD'];
 
     // Determine payload
-    if ($payload === null) {
-        $payload = getJsonPayload();
-    }
+    $payload = $payload ?? getJsonPayload();
 
     // Decode payload (if string), or use directly if already array
     $decodedPayload = is_array($payload) ? $payload : json_decode($payload, true);
+    $jsonPayload = is_string($payload) ? $payload : json_encode($payload);
 
+    // Check for INITIATE_AUTHENTICATION operation
     $isInitiateAuth = isset($decodedPayload['apiOperation']) &&
                       strtoupper($decodedPayload['apiOperation']) === 'INITIATE_AUTHENTICATION';
-
-    // Ensure payload is a string before sending to doRequest
-    $jsonPayload = is_string($payload) ? $payload : json_encode($payload);
 
     // Perform gateway request
     $response = doRequest($gatewayUrl . $path, $httpMethod, $jsonPayload, $headers);
 
-    if ($isInitiateAuth) {
-        // do NOT exit, return response for further steps
-        return decodeResponse($response);
+    // Decode once for consistent handling
+    $decodedResponse = decodeResponse($response);
+
+    // Decide what to do based on context
+    if ($isInitiateAuth || $returnOnly) {
+        return $decodedResponse;
     }
 
-    // default: output and exit
+    // Otherwise, output and exit
     outputJsonResponse($response);
 }
