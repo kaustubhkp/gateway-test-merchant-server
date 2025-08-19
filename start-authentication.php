@@ -70,8 +70,8 @@ if (intercept('PUT')) {
       error_log("Step 1: Initiate Authentication");
       error_log("Payload: " . json_encode($initPayload));
 
-      $initiateResponse = proxyCall($apiBasePath, $initPayload, 'PUT');
-      error_log("PHONIES: initiateResponse: " . json_encode($initiateResponse));
+      $initiateResponse = proxyCall($apiBasePath, $initPayload, 'PUT', true);
+      error_log("DEBUG: initiateResponse: " . json_encode($initiateResponse));
 
       $iaData = $initiateResponse['gatewayResponse'] ?? $initiateResponse;
       error_log("DEBUG: gatewayResponse used as iaData: " . json_encode($iaData));
@@ -160,13 +160,12 @@ if (intercept('PUT')) {
 
       error_log("Payload for AUTHENTICATE_PAYER: " . json_encode($authPayload));
 
-      $authenticateResponse = proxyCall($apiBasePath, $authPayload, 'PUT');
+      $authenticateResponse = proxyCall($apiBasePath, $authPayload, 'PUT', true);
       error_log("DEBUG: authenticateResponse: " . json_encode($authenticateResponse));
 
       // === Step 4: Return Result ===
       error_log("Step 4: Return Result");
       echo json_encode($authenticateResponse);
-      exit;
   } catch (Exception $e) {
       http_response_code(500);
       error_log("EXCEPTION: " . $e->getMessage());
