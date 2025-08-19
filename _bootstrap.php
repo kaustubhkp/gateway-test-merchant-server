@@ -177,10 +177,6 @@ function proxyCall($path, $payload = null, $method = null, $returnOnly = false) 
     $decodedPayload = is_array($payload) ? $payload : json_decode($payload, true);
     $jsonPayload = is_string($payload) ? $payload : json_encode($payload);
 
-    // Check for INITIATE_AUTHENTICATION operation
-    $isInitiateAuth = isset($decodedPayload['apiOperation']) &&
-                      strtoupper($decodedPayload['apiOperation']) === 'INITIATE_AUTHENTICATION';
-
     // Perform gateway request
     $response = doRequest($gatewayUrl . $path, $httpMethod, $jsonPayload, $headers);
 
@@ -188,7 +184,7 @@ function proxyCall($path, $payload = null, $method = null, $returnOnly = false) 
     $decodedResponse = decodeResponse($response);
 
     // Decide what to do based on context
-    if ($isInitiateAuth || $returnOnly) {
+    if ($returnOnly) {
         return $decodedResponse;
     }
 
