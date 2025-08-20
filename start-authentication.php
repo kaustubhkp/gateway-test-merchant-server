@@ -163,6 +163,7 @@ if (intercept('PUT')) {
       // === Step 4: Return Result ===
       error_log("Step 4: Return Result");
       echo json_encode($authenticateResponse);
+      exit;
   } catch (Exception $e) {
       http_response_code(500);
       error_log("EXCEPTION: " . $e->getMessage());
